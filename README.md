@@ -74,11 +74,6 @@ A `docker-compose.yml` file is provided for immediate production deployment. It 
 docker-compose up --build -d
 ```
 
-## 👥 Demo Accounts
-Upon initial boot, the database is seeded with a demo administrator account:
-- **Email**: admin@panchayatguard.gov.in
-- **Password**: SecurePassword123!
-
 ## 📜 API Documentation
 FastAPI automatically generates interactive OpenAPI documentation. Once the backend is running, visit:
 - Swagger UI: `http://localhost:8000/docs`
