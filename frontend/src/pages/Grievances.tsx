@@ -6,6 +6,7 @@ import { MessageSquare, Plus, Search, Filter } from 'lucide-react';
 export default function Grievances() {
   const [grievances, setGrievances] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<any>(null);
   const [search, setSearch] = useState('');
@@ -13,18 +14,24 @@ export default function Grievances() {
 
   const fetchGrievances = async () => {
      setLoading(true);
+     setError(null);
      try {
        const params = new URLSearchParams();
        if (search) params.append('search', search);
        if (status) params.append('status', status);
-       const res = await api.get(`/grievances?${params.toString()}`);
+       const res = await api.get(`/grievances/?${params.toString()}`);
        setGrievances(res.data);
-     } catch (e) { console.error(e); } finally { setLoading(false); }
+     } catch (e: any) { 
+       console.error(e); 
+       setError(e.message);
+     } finally { 
+       setLoading(false); 
+     }
   };
 
   useEffect(() => {
     fetchGrievances();
-  }, [status]); // Trigger on status change, for search we can use form submit or debounce
+  }, [status]); 
 
   return (
     <div className="space-y-6">
@@ -55,6 +62,7 @@ export default function Grievances() {
                </select>
             </div>
          </div>
+         {error && <div className="p-4 bg-red-50 text-red-600 border-b border-red-200">Error: {error}</div>}
          <table className="w-full text-left text-sm">
             <thead className="bg-gray-50 text-gray-600 font-medium border-b">
                <tr>
@@ -70,15 +78,16 @@ export default function Grievances() {
             </thead>
             <tbody className="divide-y divide-gray-100">
                {loading ? <tr><td colSpan={8} className="p-8 text-center text-gray-500">Loading...</td></tr> : 
+                grievances.length === 0 ? <tr><td colSpan={8} className="p-8 text-center text-gray-500">No grievances found.</td></tr> :
                 grievances.map(g => (
                   <tr key={g.id} className="hover:bg-gray-50">
                      <td className="px-6 py-4 font-bold text-pg-blue">{g.grievance_id}</td>
                      <td className="px-6 py-4 text-gray-900 font-medium max-w-xs truncate" title={g.description}>{g.subject}</td>
                      <td className="px-6 py-4 text-gray-600">{g.panchayat_name}</td>
                      <td className="px-6 py-4 text-gray-600">{g.submitted_by}</td>
-                     <td className="px-6 py-4 text-gray-600">{new Date(g.date).toLocaleDateString()}</td>
+                     <td className="px-6 py-4 text-gray-600">{g.date ? new Date(g.date).toLocaleDateString() : 'Unknown'}</td>
                      <td className="px-6 py-4">
-                        <span className={`px-2 py-1 rounded text-xs font-bold ${g.priority==='High'?'bg-red-100 text-red-700':g.priority==='Medium'?'bg-orange-100 text-orange-700':'bg-green-100 text-green-700'}`}>{g.priority}</span>
+                        <span className={`px-2 py-1 rounded text-xs font-bold ${g.priority==='High' || g.priority==='Critical'?'bg-red-100 text-red-700':g.priority==='Medium'?'bg-orange-100 text-orange-700':'bg-green-100 text-green-700'}`}>{g.priority}</span>
                      </td>
                      <td className="px-6 py-4">
                         <span className={`px-2 py-1 rounded-full border text-xs font-bold ${g.status==='Open'?'bg-red-50 text-red-600 border-red-200':g.status==='Under Review'?'bg-yellow-50 text-yellow-600 border-yellow-200':g.status==='Resolved'?'bg-green-50 text-green-600 border-green-200':'bg-gray-100 text-gray-600 border-gray-300'}`}>{g.status}</span>

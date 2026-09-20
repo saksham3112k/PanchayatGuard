@@ -4,10 +4,17 @@ import { ShieldAlert } from 'lucide-react';
 
 export default function AuditLogs() {
   const [logs, setLogs] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/audit-logs').then(res => setLogs(res.data)).catch(console.error);
+    api.get('/audit-logs/')
+      .then(res => setLogs(res.data))
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
   }, []);
+
+  if (error) return <div className="p-8 text-red-500">Error: {error}</div>;
 
   return (
     <div className="space-y-6">
@@ -35,9 +42,11 @@ export default function AuditLogs() {
                </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-               {logs.map(log => (
+               {loading ? <tr><td colSpan={6} className="p-8 text-center text-gray-500">Loading logs...</td></tr> : 
+                logs.length === 0 ? <tr><td colSpan={6} className="p-8 text-center text-gray-500">No logs found.</td></tr> :
+                logs.map(log => (
                   <tr key={log.id} className="hover:bg-gray-50">
-                     <td className="px-6 py-3 text-gray-600">{new Date(log.timestamp).toLocaleString()}</td>
+                     <td className="px-6 py-3 text-gray-600">{log.timestamp ? new Date(log.timestamp).toLocaleString() : 'Unknown'}</td>
                      <td className="px-6 py-3 font-semibold text-gray-900">{log.user}</td>
                      <td className="px-6 py-3">
                         <span className={`px-2 py-1 rounded text-xs font-bold ${log.action==='CREATE'?'bg-green-100 text-green-700':log.action==='UPDATE'?'bg-blue-100 text-blue-700':log.action==='DELETE'?'bg-red-100 text-red-700':'bg-gray-100 text-gray-700'}`}>{log.action}</span>
