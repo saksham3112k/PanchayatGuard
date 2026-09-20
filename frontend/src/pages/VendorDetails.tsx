@@ -180,7 +180,7 @@ export default function VendorDetails() {
                            {data.recent_transactions && data.recent_transactions.map((tx: any, i: number) => (
                               <tr key={i} className="border-b hover:bg-gray-50">
                                  <td className="px-4 py-2 font-medium text-pg-blue">{tx.transaction_id}</td>
-                                 <td className="px-4 py-2 text-gray-600">{new Date(tx.date).toLocaleDateString('en-GB', {day:'2-digit',month:'short'})}</td>
+                                 <td className="px-4 py-2 text-gray-600">{tx.date ? new Date(tx.date).toLocaleDateString('en-GB', {day:'2-digit',month:'short'}) : 'Unknown'}</td>
                                  <td className="px-4 py-2 font-medium">₹ {(tx.amount/100000).toFixed(2)}L</td>
                                  <td className="px-4 py-2 font-bold"><span className={tx.risk_score >= 80 ? 'text-red-600' : tx.risk_score >= 40 ? 'text-orange-500' : 'text-green-600'}>{tx.risk_score}</span></td>
                               </tr>
@@ -195,3 +195,4 @@ export default function VendorDetails() {
     </div>
   );
 }
+

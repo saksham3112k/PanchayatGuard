@@ -62,7 +62,7 @@ export default function TransactionDetails({ isOpen, txId, onClose }: any) {
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
                   <div className="text-xs text-gray-500 font-medium mb-1">Date</div>
-                  <div className="text-xl font-bold text-gray-900">{new Date(data.procurement_date).toLocaleDateString()}</div>
+                  <div className="text-xl font-bold text-gray-900">{data.procurement_date ? new Date(data.procurement_date).toLocaleDateString() : 'Unknown'}</div>
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
                   <div className="text-xs text-gray-500 font-medium mb-1">Method</div>
@@ -125,7 +125,7 @@ export default function TransactionDetails({ isOpen, txId, onClose }: any) {
                               {a.type}
                             </div>
                             <div className="text-gray-700 text-xs">{a.description}</div>
-                            <div className="text-[10px] text-gray-400 mt-2">{new Date(a.date).toLocaleString()}</div>
+                            <div className="text-[10px] text-gray-400 mt-2">{a.date ? new Date(a.date).toLocaleString() : 'Unknown'}</div>
                           </div>
                         ))
                       ) : (
@@ -148,7 +148,7 @@ export default function TransactionDetails({ isOpen, txId, onClose }: any) {
                                 <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 bg-gray-300 rounded-full border-2 border-white"></div>
                                 <div className="text-xs font-bold text-gray-800">{log.action}</div>
                                 <div className="text-xs text-gray-500">{log.details}</div>
-                                <div className="text-[10px] text-gray-400 mt-0.5">{new Date(log.date).toLocaleString()}</div>
+                                <div className="text-[10px] text-gray-400 mt-0.5">{log.date ? new Date(log.date).toLocaleString() : 'Unknown'}</div>
                               </div>
                             ))}
                          </div>
@@ -168,3 +168,4 @@ export default function TransactionDetails({ isOpen, txId, onClose }: any) {
     </>
   );
 }
+

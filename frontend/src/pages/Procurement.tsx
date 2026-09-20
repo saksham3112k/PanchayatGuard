@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { 
   Search, Filter, Download, Plus, Edit, Eye, Trash2, 
@@ -102,9 +102,9 @@ export default function Procurement() {
   };
 
   const formatCurrency = (val: number) => {
-    if (val >= 10000000) return `₹ ${(val / 10000000).toFixed(2)} Cr`;
-    if (val >= 100000) return `₹ ${(val / 100000).toFixed(2)} L`;
-    return `₹ ${val.toLocaleString()}`;
+    if (val >= 10000000) return `? ${(val / 10000000).toFixed(2)} Cr`;
+    if (val >= 100000) return `? ${(val / 100000).toFixed(2)} L`;
+    return `? ${val.toLocaleString()}`;
   };
 
   return (
@@ -131,7 +131,7 @@ export default function Procurement() {
             </div>
           </div>
           <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
-            <div className="p-3 bg-blue-50 rounded text-pg-blue"><span className="text-xl font-bold">₹</span></div>
+            <div className="p-3 bg-blue-50 rounded text-pg-blue"><span className="text-xl font-bold">?</span></div>
             <div>
               <div className="text-xs text-gray-500 font-medium">Total Value</div>
               <div className="text-xl font-bold text-gray-900">{formatCurrency(summary.total_value)}</div>
@@ -234,7 +234,7 @@ export default function Procurement() {
                   <tr>
                      <th className="px-4 py-3"><input type="checkbox" className="rounded border-gray-300"/></th>
                      <th className="px-4 py-3 font-semibold">Transaction ID</th>
-                     <th className="px-4 py-3 font-semibold">Date ↓</th>
+                     <th className="px-4 py-3 font-semibold">Date ?</th>
                      <th className="px-4 py-3 font-semibold">Panchayat</th>
                      <th className="px-4 py-3 font-semibold">Vendor</th>
                      <th className="px-4 py-3 font-semibold">Category</th>
@@ -254,11 +254,11 @@ export default function Procurement() {
                      <tr key={tx.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                         <td className="px-4 py-3"><input type="checkbox" className="rounded border-gray-300"/></td>
                         <td className="px-4 py-3 font-medium text-gray-900">{tx.transaction_id}</td>
-                        <td className="px-4 py-3">{new Date(tx.procurement_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})}</td>
+                        <td className="px-4 py-3">{tx.procurement_date ? new Date(tx.procurement_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}) : 'Unknown'}</td>
                         <td className="px-4 py-3">{tx.panchayat_name}</td>
                         <td className="px-4 py-3">{tx.vendor_name}</td>
                         <td className="px-4 py-3">{tx.procurement_category}</td>
-                        <td className="px-4 py-3 text-gray-900 font-medium">₹ {(tx.amount).toLocaleString()}</td>
+                        <td className="px-4 py-3 text-gray-900 font-medium">? {(tx.amount).toLocaleString()}</td>
                         <td className="px-4 py-3">{tx.procurement_method}</td>
                         <td className="px-4 py-3 text-center">
                            <span className={`font-bold ${tx.risk_score >= 80 ? 'text-red-600' : tx.risk_score >= 60 ? 'text-orange-500' : 'text-green-600'}`}>{tx.risk_score}</span>
@@ -309,3 +309,4 @@ export default function Procurement() {
     </div>
   );
 }
+

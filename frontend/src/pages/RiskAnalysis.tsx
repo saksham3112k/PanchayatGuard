@@ -108,7 +108,7 @@ export default function RiskAnalysis() {
                   <div className="flex-1">
                      <div className="flex items-center justify-between">
                         <div className="font-bold text-gray-900 text-lg">{a.type.replace('_', ' ')}</div>
-                        <div className="text-xs font-semibold text-gray-500">{new Date(a.date).toLocaleString()}</div>
+                        <div className="text-xs font-semibold text-gray-500">{a.date ? new Date(a.date).toLocaleString() : 'Unknown'}</div>
                      </div>
                      <div className="text-sm text-gray-700 mt-1">{a.explanation}</div>
                      <div className="flex items-center gap-4 mt-2 text-xs font-medium text-gray-500">
@@ -126,3 +126,4 @@ export default function RiskAnalysis() {
     </div>
   );
 }
+

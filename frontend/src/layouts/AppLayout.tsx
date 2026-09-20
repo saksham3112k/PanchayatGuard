@@ -197,7 +197,7 @@ export default function AppLayout() {
                                 <h4 className="text-sm font-semibold text-gray-900">{n.title}</h4>
                                 <p className="text-xs text-gray-600 mt-1">{n.message}</p>
                                 <div className="text-[10px] text-gray-400 mt-2 flex justify-between">
-                                   <span>{new Date(n.created_at).toLocaleString()}</span>
+                                   <span>{n.created_at ? new Date(n.created_at).toLocaleString() : 'Unknown'}</span>
                                    {!n.is_read && <button onClick={()=>markAsRead(n.id)} className="text-pg-blue hover:underline font-semibold">Mark read</button>}
                                 </div>
                              </div>
@@ -250,3 +250,4 @@ export default function AppLayout() {
     </div>
   );
 }
+
