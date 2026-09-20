@@ -65,5 +65,6 @@ if os.path.exists(frontend_dist):
     async def serve_react_app(full_path: str):
         # Don't intercept API calls
         if full_path.startswith("api/"):
-            return {"detail": "Not Found"}
+            from fastapi import HTTPException`n            raise HTTPException(status_code=404, detail="Not Found")
         return FileResponse(os.path.join(frontend_dist, "index.html"))
+

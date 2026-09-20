@@ -52,7 +52,7 @@ export default function AppLayout() {
 
   useEffect(() => {
     if(user) {
-       api.get('/notifications').then(res => {
+       api.get('/notifications/').then(res => {
          setNotifs(res.data.notifications);
          setUnreadCount(res.data.unread_count);
        });
@@ -61,13 +61,13 @@ export default function AppLayout() {
 
   const markAsRead = async (id: number) => {
      await api.put(`/notifications/${id}/read`);
-     setNotifs(notifs.map(n => n.id === id ? {...n, is_read: true} : n));
+     setNotifs((Array.isArray(notifs) ? notifs : []).map(n => n.id === id ? {...n, is_read: true} : n));
      setUnreadCount(Math.max(0, unreadCount - 1));
   };
   
   const markAllRead = async () => {
      await api.put(`/notifications/read-all`);
-     setNotifs(notifs.map(n => ({...n, is_read: true})));
+     setNotifs((Array.isArray(notifs) ? notifs : []).map(n => ({...n, is_read: true})));
      setUnreadCount(0);
   };
 
@@ -188,7 +188,7 @@ export default function AppLayout() {
                        <button onClick={markAllRead} className="text-xs text-pg-blue hover:underline">Mark all as read</button>
                     </div>
                     <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
-                       {notifs.map(n => (
+                       {(Array.isArray(notifs) ? notifs : []).map(n => (
                           <div key={n.id} className={`p-4 flex gap-3 ${!n.is_read ? 'bg-blue-50/30' : ''}`}>
                              <div className={`p-2 rounded-full h-fit ${n.type==='alert' ? 'bg-red-100 text-red-500' : 'bg-blue-100 text-pg-blue'}`}>
                                 <AlertTriangle className="w-4 h-4"/>
@@ -203,7 +203,7 @@ export default function AppLayout() {
                              </div>
                           </div>
                        ))}
-                       {notifs.length === 0 && <div className="p-6 text-center text-sm text-gray-500">No notifications</div>}
+                       {(Array.isArray(notifs) ? notifs : []).length === 0 && <div className="p-6 text-center text-sm text-gray-500">No notifications</div>}
                     </div>
                  </div>
                )}
@@ -250,4 +250,5 @@ export default function AppLayout() {
     </div>
   );
 }
+
 
