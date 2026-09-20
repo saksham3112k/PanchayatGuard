@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+    height: 100%;
+    margin: 0;
+    background-color: #F8FAFC;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+
+/* Simple inverted dark mode for dashboard */
+body.dark-theme {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: #f3f4f6;
+}
+body.dark-theme img, body.dark-theme .avatar {
+  filter: invert(1) hue-rotate(180deg);
+}
