@@ -6,6 +6,7 @@ import { Brain, Activity, Users, Copy, Share2, Target, AlertTriangle } from 'luc
 export default function AIInsights() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [viewingTxId, setViewingTxId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -13,11 +14,17 @@ export default function AIInsights() {
       try {
         const res = await api.get('/ai-insights');
         setData(res.data);
-      } catch (e) { console.error(e); } finally { setLoading(false); }
+      } catch (e: any) {
+        console.error(e);
+        setError(e.message || "Failed to load insights");
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);
 
+  if (error) return <div className="p-8 text-red-500">Error: {error}</div>;
   if (!data) return <div className="p-8">Loading AI Insights...</div>;
 
   return (
@@ -36,23 +43,23 @@ export default function AIInsights() {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
          <div className="bg-white p-4 rounded-xl border border-blue-200 shadow-sm">
             <div className="flex items-center gap-2 text-blue-600 mb-2"><Activity className="w-5 h-5 font-bold"/><span className="font-semibold text-sm">Price Anomalies</span></div>
-            <div className="text-2xl font-bold text-gray-900">{data.categories['Price Anomalies']}</div>
+            <div className="text-2xl font-bold text-gray-900">{data?.categories?.['Price Anomalies'] || 0}</div>
          </div>
          <div className="bg-white p-4 rounded-xl border border-indigo-200 shadow-sm">
             <div className="flex items-center gap-2 text-indigo-600 mb-2"><Users className="w-5 h-5 font-bold"/><span className="font-semibold text-sm">Vendor Anomalies</span></div>
-            <div className="text-2xl font-bold text-gray-900">{data.categories['Vendor Anomalies']}</div>
+            <div className="text-2xl font-bold text-gray-900">{data?.categories?.['Vendor Anomalies'] || 0}</div>
          </div>
          <div className="bg-white p-4 rounded-xl border border-red-200 shadow-sm">
             <div className="flex items-center gap-2 text-red-600 mb-2"><Copy className="w-5 h-5 font-bold"/><span className="font-semibold text-sm">Duplicate Tx</span></div>
-            <div className="text-2xl font-bold text-gray-900">{data.categories['Duplicate Transactions']}</div>
+            <div className="text-2xl font-bold text-gray-900">{data?.categories?.['Duplicate Transactions'] || 0}</div>
          </div>
          <div className="bg-white p-4 rounded-xl border border-purple-200 shadow-sm">
             <div className="flex items-center gap-2 text-purple-600 mb-2"><Share2 className="w-5 h-5 font-bold"/><span className="font-semibold text-sm">Tx Splitting</span></div>
-            <div className="text-2xl font-bold text-gray-900">{data.categories['Transaction Splitting']}</div>
+            <div className="text-2xl font-bold text-gray-900">{data?.categories?.['Transaction Splitting'] || 0}</div>
          </div>
          <div className="bg-white p-4 rounded-xl border border-orange-200 shadow-sm">
             <div className="flex items-center gap-2 text-orange-600 mb-2"><Target className="w-5 h-5 font-bold"/><span className="font-semibold text-sm">Concentration Risk</span></div>
-            <div className="text-2xl font-bold text-gray-900">{data.categories['Concentration Risks']}</div>
+            <div className="text-2xl font-bold text-gray-900">{data?.categories?.['Concentration Risks'] || 0}</div>
          </div>
       </div>
 
@@ -61,10 +68,16 @@ export default function AIInsights() {
             <h3 className="font-bold text-gray-800 flex items-center gap-2"><Brain className="w-5 h-5 text-pg-blue"/> Active AI Insights & Alerts</h3>
          </div>
          <div className="divide-y divide-gray-100">
-            {data.insights.map((insight: any) => (
+            {data?.insights?.map((insight: any) => {
+               const severity = insight.severity?.toUpperCase();
+               const isCritical = severity === 'CRITICAL';
+               const isHigh = severity === 'HIGH';
+               const dateStr = insight.date ? new Date(insight.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Unknown Date';
+               
+               return (
                <div key={insight.id} className="p-5 hover:bg-gray-50 flex gap-4 transition-colors items-center justify-between">
                   <div className="flex gap-4 w-1/3">
-                      <div className={`p-3 rounded-xl h-fit ${insight.severity==='Critical'||insight.severity==='CRITICAL' ? 'bg-red-100 text-red-600' : insight.severity==='High'||insight.severity==='HIGH' ? 'bg-orange-100 text-orange-600' : 'bg-yellow-100 text-yellow-600'}`}>
+                      <div className={`p-3 rounded-xl h-fit ${isCritical ? 'bg-red-100 text-red-600' : isHigh ? 'bg-orange-100 text-orange-600' : 'bg-yellow-100 text-yellow-600'}`}>
                          <AlertTriangle className="w-6 h-6"/>
                       </div>
                       <div>
@@ -72,7 +85,7 @@ export default function AIInsights() {
                          <p className="text-sm text-gray-600 mt-1">{insight.description}</p>
                          <div className="mt-2 flex gap-2">
                              <span className="text-xs font-semibold px-2 py-1 rounded bg-gray-100 text-gray-600">{insight.category}</span>
-                             <span className={`text-xs font-semibold px-2 py-1 rounded ${insight.severity==='Critical'||insight.severity==='CRITICAL'?'bg-red-100 text-red-700':insight.severity==='High'||insight.severity==='HIGH'?'bg-orange-100 text-orange-700':'bg-yellow-100 text-yellow-700'}`}>{insight.severity}</span>
+                             <span className={`text-xs font-semibold px-2 py-1 rounded ${isCritical ? 'bg-red-100 text-red-700' : isHigh ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'}`}>{severity || 'LOW'}</span>
                          </div>
                       </div>
                   </div>
@@ -84,15 +97,15 @@ export default function AIInsights() {
                   </div>
 
                   <div className="w-1/6 text-sm text-gray-500 font-medium">
-                     {new Date(insight.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                     {dateStr}
                   </div>
                   
                   <div className="w-1/6 text-right">
                      <button onClick={() => setViewingTxId(insight.tx_pk)} className="px-4 py-2 border border-gray-300 rounded text-sm font-semibold text-pg-blue hover:bg-blue-50 transition-colors">View Details</button>
                   </div>
                </div>
-            ))}
-            {data.insights.length === 0 && <div className="p-8 text-center text-gray-500">No active insights.</div>}
+            )})}
+            {(!data?.insights || data.insights.length === 0) && <div className="p-8 text-center text-gray-500">No active insights.</div>}
          </div>
       </div>
       {viewingTxId && <TransactionDetails isOpen={true} txId={viewingTxId} onClose={() => setViewingTxId(null)} />}
